@@ -168,15 +168,10 @@ def convert_all(input_dir: str, output_dir: str) -> int:
     return 1 if failed > 0 else 0
 
 
-def main() -> int:
-    if len(sys.argv) > 3:
-        usage()
-        return 2
 
-    input_dir = sys.argv[1] if len(sys.argv) >= 2 else INPUT_DIR
-    output_dir = sys.argv[2] if len(sys.argv) >= 3 else OUTPUT_DIR
-    return convert_all(input_dir, output_dir)
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())
+def convert_berxel_capture(input_image: str)-> np.ndarray:
+    img = cv2.imread(input_image, cv2.IMREAD_UNCHANGED)
+    if img is None:
+        raise RuntimeError(f"Failed to read input: {input_image}")
+    return img
+        
