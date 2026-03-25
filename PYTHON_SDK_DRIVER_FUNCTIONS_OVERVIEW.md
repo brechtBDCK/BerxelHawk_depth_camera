@@ -141,6 +141,72 @@ Attaches the paired color-handle when a depth device has a separate color interf
 
 ---
 
+## Filter Behavior Notes (Practical)
+
+This section summarizes what is documented by the SDK plus practical behavior seen during live A/B testing in `Samples/HawkDepth.py`.
+
+### Documented control meaning
+
+- `setStreamMirror(bMirror)`: mirror image on/off.
+- `setRegistrationEnable(bEnable)`: depth-to-color registration on/off.
+- `setFrameSync(bEnable)`: frame synchronization on/off.
+- `setSystemClock()`: sync host clock to camera (timestamp alignment).
+- `setDenoiseStatus(bEnable)`: general denoise on/off.
+- `setTemporalDenoiseStatus(bEnable)`: temporal (across-frames) denoise on/off.
+- `setSpatialDenoiseStatus(bEnable)`: spatial (within-frame neighborhood) denoise on/off.
+- `setColorQuality(nValue)`: color stream quality level (driver-defined integer).
+- `setColorExposureGain(exposureTime, gain)`: manual color exposure/gain.
+- `enableColorAutoExposure()`: enable/restore color auto exposure.
+
+### General denoise vs temporal/spatial denoise
+
+- `setDenoiseStatus` is a broad/global denoise switch.
+- `setTemporalDenoiseStatus` targets frame-to-frame noise smoothing.
+- `setSpatialDenoiseStatus` targets local neighborhood smoothing in the current frame.
+- `setColorQuality` applies to the color pipeline only and should not directly change depth values.
+- The SDK does not clearly document dependency rules between these toggles (for example, whether temporal/spatial require general denoise enabled). Treat behavior as firmware-defined.
+
+### Default-state notes seen in vendor docs
+
+- Mirror default: off (non-mirrored).
+- Registration default: off.
+- Frame sync default: on.
+- General denoise default: on.
+
+### Expected visual side effects (inference)
+
+- Temporal denoise: lower flicker/noise, but can introduce motion lag/ghosting.
+- Spatial denoise: smoother depth surfaces, but can soften edges/details.
+- Registration enabled can change apparent geometry/FOV alignment, which can look like the depth image is "zoomed out" or remapped.
+- Mirror enabled should only flip left/right.
+
+### Unknowns / limits in public docs
+
+- Temporal denoise history length/window is not exposed in this Python SDK API.
+- `setTemporalDenoiseStatus` is on/off only; no public parameter for frame count or time constant.
+- `setColorQuality(nValue)` has no public value table in this repo docs; exact integer meaning is vendor/driver-defined.
+
+### Runtime/performance note for live A/B compare
+
+On a single camera stream, true simultaneous raw+filtered hardware output is not available. If you alternate settings each frame to capture both views, the loop gets slower and temporal filters can look jittery because filter state/history is repeatedly disturbed.
+
+---
+
+## Sample Profile Mapping (`Samples/HawkDepth.py`)
+
+Baseline (left panel) keeps all filter toggles off. Right panel cycles one of these profiles:
+
+| Profile | Main toggles |
+|---|---|
+| Denoise | `denoise=True` |
+| Temporal Denoise | `temporal_denoise=True` |
+| Spatial Denoise | `spatial_denoise=True` |
+| Temporal + Spatial | `temporal_denoise=True`, `spatial_denoise=True` |
+| Full Filter Stack | `registration=True`, `frame_sync=True`, `denoise=True`, `temporal_denoise=True`, `spatial_denoise=True`, `color_auto_exposure=True` |
+| Mirror + Full Stack | Full Filter Stack + `stream_mirror=True` |
+
+---
+
 ## `BerxelHawkFrame` Functions (Frame Access Helpers)
 
 ### `getDataAsUint8()`

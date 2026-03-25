@@ -169,9 +169,7 @@ def convert_all(input_dir: str, output_dir: str) -> int:
 
 
 
-def convert_berxel_capture(input_image: str)-> np.ndarray:
-    img = cv2.imread(input_image, cv2.IMREAD_UNCHANGED)
-    if img is None:
-        raise RuntimeError(f"Failed to read input: {input_image}")
-    return img
+def convert_berxel_capture(input_file_raw: str)-> np.ndarray:
+    """takes in the path to a .raw file, and returns the image as both a numpy array and a png"""
+    
         
