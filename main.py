@@ -9,6 +9,13 @@ import numpy as np
 from BerxelSdkDriver.BerxelHawkContext import BerxelHawkContext
 from BerxelSdkDriver.BerxelHawkDefines import BerxelHawkStreamFlagMode, BerxelHawkStreamType
 
+STREAM_WARMUP_SEC = 0.5
+READ_TIMEOUT_MS = 200
+
+def set_filters():
+    pass
+def take_images():
+    pass
 
 def main() -> int:
     # Create context.
@@ -17,7 +24,7 @@ def main() -> int:
     color_frame = None
     depth_frame = None
 
-    stream_mode_flag = BerxelHawkStreamFlagMode.forward_dict["BERXEL_HAWK_MIX_STREAM_FLAG_MODE"]
+    stream_mode_flag = BerxelHawkStreamFlagMode.forward_dict["BERXEL_HAWK_MIX_STREAM_FLAG_MODE"] #BERXEL_HAWK_SINGULAR_STREAM_FLAG_MODE or BERXEL_HAWK_MIX_STREAM_FLAG_MODE
     stream_type_flags = (BerxelHawkStreamType.forward_dict["BERXEL_HAWK_COLOR_STREAM"] | BerxelHawkStreamType.forward_dict["BERXEL_HAWK_DEPTH_STREAM"])
 
     try:
@@ -36,24 +43,23 @@ def main() -> int:
 
         # Basic settings for this prototype.
         # Keep defaults simple and explicit.
-        # camera.setRegistrationEnable(False)
-        # camera.setFrameSync(False)
-        # camera.setDenoiseStatus(False)
-        # camera.setTemporalDenoiseStatus(False)
-        # camera.setSpatialDenoiseStatus(False)
+        camera.setDenoiseStatus(True)
+        camera.setTemporalDenoiseStatus(True)
+        camera.setSpatialDenoiseStatus(True)
 
         camera.setStreamFlagMode(stream_mode_flag)
 
         color_stream = BerxelHawkStreamType.forward_dict["BERXEL_HAWK_COLOR_STREAM"]
-        depth_stream = BerxelHawkStreamType.forward_dict["BERXEL_HAWK_DEPTH_STREAM"]
+        modes_color = camera.getSupportFrameModes(color_stream)
 
-        color_mode = camera.getCurrentFrameMode(color_stream)
-        depth_mode = camera.getCurrentFrameMode(depth_stream)
-      
-        if camera.setFrameMode(color_stream, color_mode) != 0:
+        depth_stream = BerxelHawkStreamType.forward_dict["BERXEL_HAWK_DEPTH_STREAM"]
+        modes_depth = camera.getSupportFrameModes(depth_stream)
+
+
+        if camera.setFrameMode(color_stream, modes_color[17]) != 0:
             print("Failed to set color frame mode.")
             return 1
-        if camera.setFrameMode(depth_stream, depth_mode) != 0:
+        if camera.setFrameMode(depth_stream, modes_depth[5]) != 0:
             print("Failed to set depth frame mode.")
             return 1
 
@@ -61,9 +67,12 @@ def main() -> int:
             print("Failed to start color/depth streams.")
             return 1
 
-        # Give the streams a moment to produce a frame.
-        color_frame = camera.readColorFrame(50)
-        depth_frame = camera.readDepthFrame(50)
+        # Give streams a short warmup and use a timeout suitable for low-fps modes.
+        time.sleep(STREAM_WARMUP_SEC)
+        color_frame = camera.readColorFrame(READ_TIMEOUT_MS)
+        depth_frame = camera.readDepthFrame(READ_TIMEOUT_MS)
+        print("depth size", depth_frame.getWidth(), depth_frame.getHeight())
+        
         if color_frame is None or depth_frame is None:
             print("Failed to read color/depth frame.")
             return 1
@@ -72,23 +81,15 @@ def main() -> int:
         color_height = color_frame.getHeight()
         color_array = np.ndarray(shape=(color_height, color_width, 3),dtype=np.uint8,buffer=color_frame.getDataAsUint8()).copy()
         #save the array as a png file
-        cv2.imwrite("captures/color.png", color_array)
+        img_color = cv2.cvtColor(np.uint8(color_array), cv2.COLOR_BGR2RGB)
+        cv2.imwrite("captures/color.png", img_color)
        
         
         depth_width = depth_frame.getWidth()
         depth_height = depth_frame.getHeight()
         depth_array = np.ndarray(shape=(depth_height, depth_width),dtype=np.uint16,buffer=depth_frame.getDataAsUint16()).copy()
         #save the array as a png file
-        cv2.imwrite("captures/depth_raw.png", depth_array)
-        
-        
-        depth_array_disp = ((depth_array / 10000.) * 255).astype(np.uint8)
-        #save the depth array as a png file
-        cv2.imwrite("captures/depth.png", depth_array_disp)
-
-        
-            
-
+        cv2.imwrite("captures/depth.png", depth_array)
 
         return 0
     finally:

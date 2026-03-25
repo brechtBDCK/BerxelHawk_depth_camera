@@ -114,3 +114,163 @@ Rotation (3x3):
 Translation:
   x=10.751551628112793, y=-0.6529058218002319, z=1.4751323461532593
 
+
+
+FLAG MODE: MIX_HD (3)
+[Version 2.0.182] [BerxelCommonDriver] [PUBLIC 20260325_13:04:54:361]##### Set Stream Flag Mode = 3
+
+getSupportFrameModes streamType =  1
+1280   800
+getSupportFrameModes streamType =  2
+1280   800
+Color: 1 mode(s)
+  [0] pixelFormat=0, size=1280x800, fps=8
+Depth: 1 mode(s)
+  [0] pixelFormat=1, size=1280x800, fps=8
+  Best color: pixelFormat=0, size=1280x800, fps=8
+  Best depth: pixelFormat=1, size=1280x800, fps=8
+
+
+FLAG MODE: MIX (2)
+[Version 2.0.182] [BerxelCommonDriver] [PUBLIC 20260325_13:04:49:765]##### Set Stream Flag Mode = 2
+
+getSupportFrameModes streamType =  1
+640   400
+640   400
+640   400
+640   400
+640   400
+640   400
+1280   800
+1280   800
+1280   800
+1280   800
+1280   800
+1280   800
+1920   1080
+1920   1080
+1920   1080
+1920   1080
+1920   1080
+1920   1080
+getSupportFrameModes streamType =  2
+640   400
+640   400
+640   400
+640   400
+640   400
+640   400
+Color: 18 mode(s)
+  [0] pixelFormat=0, size=640x400, fps=5
+  [1] pixelFormat=0, size=640x400, fps=10
+  [2] pixelFormat=0, size=640x400, fps=15
+  [3] pixelFormat=0, size=640x400, fps=20
+  [4] pixelFormat=0, size=640x400, fps=25
+  [5] pixelFormat=0, size=640x400, fps=30
+  [6] pixelFormat=0, size=1280x800, fps=5
+  [7] pixelFormat=0, size=1280x800, fps=10
+  [8] pixelFormat=0, size=1280x800, fps=15
+  [9] pixelFormat=0, size=1280x800, fps=20
+  [10] pixelFormat=0, size=1280x800, fps=25
+  [11] pixelFormat=0, size=1280x800, fps=30
+  [12] pixelFormat=0, size=1920x1080, fps=5
+  [13] pixelFormat=0, size=1920x1080, fps=10
+  [14] pixelFormat=0, size=1920x1080, fps=15
+  [15] pixelFormat=0, size=1920x1080, fps=20
+  [16] pixelFormat=0, size=1920x1080, fps=25
+  [17] pixelFormat=0, size=1920x1080, fps=30
+Depth: 6 mode(s)
+  [0] pixelFormat=1, size=640x400, fps=5
+  [1] pixelFormat=1, size=640x400, fps=10
+  [2] pixelFormat=1, size=640x400, fps=15
+  [3] pixelFormat=1, size=640x400, fps=20
+  [4] pixelFormat=1, size=640x400, fps=25
+  [5] pixelFormat=1, size=640x400, fps=30
+  Best color: pixelFormat=0, size=1920x1080, fps=30
+  Best depth: pixelFormat=1, size=640x400, fps=30
+
+FLAG MODE: SINGULAR (1)
+[Version 2.0.182] [BerxelCommonDriver] [PUBLIC 20260325_13:04:47:611]##### Set Stream Flag Mode = 1
+
+getSupportFrameModes streamType =  1
+640   400
+640   400
+640   400
+640   400
+640   400
+640   400
+1280   800
+1280   800
+1280   800
+1280   800
+1280   800
+1280   800
+1920   1080
+1920   1080
+1920   1080
+1920   1080
+1920   1080
+1920   1080
+getSupportFrameModes streamType =  2
+160   100
+160   100
+160   100
+160   100
+160   100
+160   100
+320   200
+320   200
+320   200
+320   200
+320   200
+320   200
+320   200
+640   400
+640   400
+640   400
+640   400
+640   400
+640   400
+640   400
+Color: 18 mode(s)
+  [0] pixelFormat=0, size=640x400, fps=5
+  [1] pixelFormat=0, size=640x400, fps=10
+  [2] pixelFormat=0, size=640x400, fps=15
+  [3] pixelFormat=0, size=640x400, fps=20
+  [4] pixelFormat=0, size=640x400, fps=25
+  [5] pixelFormat=0, size=640x400, fps=30
+  [6] pixelFormat=0, size=1280x800, fps=5
+  [7] pixelFormat=0, size=1280x800, fps=10
+  [8] pixelFormat=0, size=1280x800, fps=15
+  [9] pixelFormat=0, size=1280x800, fps=20
+  [10] pixelFormat=0, size=1280x800, fps=25
+  [11] pixelFormat=0, size=1280x800, fps=30
+  [12] pixelFormat=0, size=1920x1080, fps=5
+  [13] pixelFormat=0, size=1920x1080, fps=10
+  [14] pixelFormat=0, size=1920x1080, fps=15
+  [15] pixelFormat=0, size=1920x1080, fps=20
+  [16] pixelFormat=0, size=1920x1080, fps=25
+  [17] pixelFormat=0, size=1920x1080, fps=30
+Depth: 20 mode(s)
+  [0] pixelFormat=1, size=160x100, fps=5
+  [1] pixelFormat=1, size=160x100, fps=10
+  [2] pixelFormat=1, size=160x100, fps=15
+  [3] pixelFormat=1, size=160x100, fps=20
+  [4] pixelFormat=1, size=160x100, fps=25
+  [5] pixelFormat=1, size=160x100, fps=30
+  [6] pixelFormat=1, size=320x200, fps=5
+  [7] pixelFormat=1, size=320x200, fps=10
+  [8] pixelFormat=1, size=320x200, fps=15
+  [9] pixelFormat=1, size=320x200, fps=20
+  [10] pixelFormat=1, size=320x200, fps=25
+  [11] pixelFormat=1, size=320x200, fps=30
+  [12] pixelFormat=1, size=320x200, fps=45
+  [13] pixelFormat=1, size=640x400, fps=5
+  [14] pixelFormat=1, size=640x400, fps=10
+  [15] pixelFormat=1, size=640x400, fps=15
+  [16] pixelFormat=1, size=640x400, fps=20
+  [17] pixelFormat=1, size=640x400, fps=25
+  [18] pixelFormat=1, size=640x400, fps=30
+  [19] pixelFormat=1, size=640x400, fps=45
+  Best color: pixelFormat=0, size=1920x1080, fps=30
+  Best depth: pixelFormat=1, size=640x400, fps=45
