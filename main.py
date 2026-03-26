@@ -1,5 +1,6 @@
 """Minimal one-shot color/depth capture for Berxel camera."""
 from pathlib import Path
+import re
 import time
 
 import cv2
@@ -10,6 +11,7 @@ from BerxelSdkDriver.BerxelHawkDefines import BerxelHawkStreamFlagMode, BerxelHa
 
 STREAM_WARMUP_SEC = 0.5
 READ_TIMEOUT_MS = 200
+
 
 def set_filters(camera):
     camera.setDenoiseStatus(True)
@@ -27,6 +29,21 @@ def print_timings_table(timings):
     for name, elapsed in timings:
         print(f"| {name.ljust(step_width)} | {(elapsed * 1000.0):>{ms_width}.3f} |")
     print(sep)
+
+
+def next_capture_paths(captures_dir: Path):
+    # Keep color/depth indices in lockstep by using a shared max index.
+    pattern = re.compile(r"^(?:color|depth)_(\d{4})\.png$")
+    max_index = 0
+    for path in captures_dir.glob("*.png"):
+        match = pattern.match(path.name)
+        if match:
+            max_index = max(max_index, int(match.group(1)))
+    next_index = max_index + 1
+    return (
+        captures_dir / f"color_{next_index:04d}.png",
+        captures_dir / f"depth_{next_index:04d}.png",
+    )
 
 def main() -> int:
     total_t0 = time.perf_counter()
@@ -121,10 +138,11 @@ def main() -> int:
 
         t0 = time.perf_counter()
         # Step 8: write images to disk.
-        captures_dir = Path("captures")
+        captures_dir = Path("captures_camera")
         captures_dir.mkdir(parents=True, exist_ok=True)
-        cv2.imwrite("captures/color.png", img_color)
-        cv2.imwrite("captures/depth.png", depth_array)
+        color_path, depth_path = next_capture_paths(captures_dir)
+        cv2.imwrite(str(color_path), img_color)
+        cv2.imwrite(str(depth_path), depth_array)
         timings.append(("save_images", time.perf_counter() - t0))
 
         status = 0
