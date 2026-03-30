@@ -7,7 +7,14 @@ import cv2
 import numpy as np
 
 from BerxelSdkDriver.BerxelHawkContext import BerxelHawkContext
-from BerxelSdkDriver.BerxelHawkDefines import BerxelHawkStreamFlagMode, BerxelHawkStreamType
+from BerxelSdkDriver.BerxelHawkDefines import (
+    BerxelHawkPixelType,
+    BerxelHawkStreamFlagMode,
+    BerxelHawkStreamType,
+)
+
+
+DEPTH_PIXEL_TYPE_12I_4D = BerxelHawkPixelType.forward_dict["BERXEL_HAWK_PIXEL_TYPE_DEP_16BIT_12I_4D"]
 
 
 def next_capture_index(out_dir):
@@ -58,13 +65,15 @@ def take_images(
         camera.setDenoiseStatus(True)
         camera.setTemporalDenoiseStatus(True)
         camera.setSpatialDenoiseStatus(True)
+        camera.setRegistrationEnable(True) #takes into account the extrinsics between color and depth sensors
+
 
         camera.setStreamFlagMode(stream_mode_flag)
 
         modes_color = camera.getSupportFrameModes(color_stream)
         modes_depth = camera.getSupportFrameModes(depth_stream)
 
-        if camera.setFrameMode(color_stream, modes_color[12]) != 0: #mode is size=1920x1080, fps=5
+        if camera.setFrameMode(color_stream, modes_color[0]) != 0: #mode is size=640x400, fps=5
             raise RuntimeError("Failed to set color frame mode.")
         if camera.setFrameMode(depth_stream, modes_depth[0]) != 0: #mode is size=640x400, fps=5
             raise RuntimeError("Failed to set depth frame mode.")
@@ -113,13 +122,22 @@ def take_images(
         timings.append(("convert_color_bgr_to_rgb", time.perf_counter() - t0))
 
         t0 = time.perf_counter()
+        depth_pixel_type = depth_frame.getPixelType()
         depth_width = depth_frame.getWidth()
         depth_height = depth_frame.getHeight()
-        depth_array = np.ndarray(
+        raw_depth_array = np.ndarray(
             shape=(depth_height, depth_width),
             dtype=np.uint16,
             buffer=depth_frame.getDataAsUint16(),
         ).copy()
+        if depth_pixel_type == DEPTH_PIXEL_TYPE_12I_4D:
+            # BERXEL_HAWK_PIXEL_TYPE_DEP_16BIT_12I_4D packs 12 integer bits and 4 fractional bits.
+            depth_array = (raw_depth_array >> 4).astype(np.float32)
+            depth_array += (raw_depth_array & 0x000f).astype(np.float32) / 16.0
+            depth_image = np.rint(depth_array).astype(np.uint16)
+        else:
+            depth_array = raw_depth_array
+            depth_image = raw_depth_array
         timings.append(("convert_depth_buffer", time.perf_counter() - t0))
 
         t0 = time.perf_counter()
@@ -134,7 +152,7 @@ def take_images(
 
         if not cv2.imwrite(str(color_path), img_color):
             raise RuntimeError(f"Failed to write color image: {color_path}")
-        if not cv2.imwrite(str(depth_path), depth_array):
+        if not cv2.imwrite(str(depth_path), depth_image):
             raise RuntimeError(f"Failed to write depth image: {depth_path}")
         timings.append(("save_images", time.perf_counter() - t0))
 

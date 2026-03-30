@@ -91,7 +91,7 @@ def main(
         modes_color = camera.getSupportFrameModes(color_stream)
         modes_depth = camera.getSupportFrameModes(depth_stream)
 
-        if camera.setFrameMode(color_stream, modes_color[0]) != 0: #mode is size=1920x1080, fps=5
+        if camera.setFrameMode(color_stream, modes_color[0]) != 0: #mode is size=640x400, fps=5
             timings.append(("setup_camera", time.perf_counter() - t0))
             print("Failed to set color frame mode.")
             return 1
