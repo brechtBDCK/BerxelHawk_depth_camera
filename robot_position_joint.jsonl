@@ -1,4 +1,0 @@
-{"Command": "FRC_ReadJointAngles", "ErrorID": 0, "TimeTag": 1799176, "JointAngle": {"J1": 68.792, "J2": 28.403, "J3": -86.879, "J4": 107.249, "J5": -39.037, "J6": 6.21, "J7": 0.0, "J8": 0.0, "J9": 0.0}}
-{"Command": "FRC_ReadJointAngles", "ErrorID": 0, "TimeTag": 1819905, "JointAngle": {"J1": 70.955, "J2": 46.017, "J3": -50.886, "J4": 13.681, "J5": -74.169, "J6": 3.869, "J7": 0.0, "J8": 0.0, "J9": 0.0}}
-{"Command": "FRC_ReadJointAngles", "ErrorID": 0, "TimeTag": 1834289, "JointAngle": {"J1": 43.496, "J2": 47.422, "J3": -44.999, "J4": -26.318, "J5": -81.269, "J6": -30.954, "J7": 0.0, "J8": 0.0, "J9": 0.0}}
-{"Command": "FRC_ReadJointAngles", "ErrorID": 0, "TimeTag": 1868440, "JointAngle": {"J1": 24.743, "J2": 29.753, "J3": -63.31, "J4": -83.133, "J5": -39.602, "J6": -40.6, "J7": 0.0, "J8": 0.0, "J9": 0.0}}

@@ -274,3 +274,7 @@ Depth: 20 mode(s)
   [19] pixelFormat=1, size=640x400, fps=45
   Best color: pixelFormat=0, size=1920x1080, fps=30
   Best depth: pixelFormat=1, size=640x400, fps=45
+
+
+color pixel type 0 means BERXEL_HAWK_PIXEL_TYPE_IMAGE_RGB24
+depth pixel type 1 means BERXEL_HAWK_PIXEL_TYPE_DEP_16BIT_12I_4D

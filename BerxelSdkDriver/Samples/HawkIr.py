@@ -96,12 +96,24 @@ class HawkIr(object):
         ir_array = np.ndarray(shape=(height, width), dtype=np.uint16, buffer=frameBuffer)
         ir_array_disp = ((ir_array / 10000.) * 255).astype(np.uint8)
 
+        # Second visualization: robust auto-contrast + false color.
+        lo = np.percentile(ir_array, 2.0)
+        hi = np.percentile(ir_array, 98.0)
+        if hi > lo:
+            ir_auto = np.clip((ir_array - lo) * (255.0 / (hi - lo)), 0, 255).astype(np.uint8)
+        else:
+            ir_auto = ir_array_disp
+        ir_auto_color = cv2.applyColorMap(ir_auto, cv2.COLORMAP_TURBO)
+
         cv2.namedWindow("IR", cv2.WINDOW_AUTOSIZE)
         cv2.imshow('IR', np.uint8(ir_array_disp))
+        cv2.namedWindow("IR_AutoColor", cv2.WINDOW_AUTOSIZE)
+        cv2.imshow("IR_AutoColor", ir_auto_color)
 
         ch = 0xFF & cv2.waitKey(1)
 
         if ch == 27 or ch == 81 or ch == 113:
+            self.__device.releaseFrame(hawkFrame)
             return -1
 
         self.__device.releaseFrame(hawkFrame)

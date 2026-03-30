@@ -21,7 +21,15 @@ def next_capture_index(out_dir):
     return max_index + 1
 
 
-def take_images(captures_dir="captures_camera",color_filename=None,depth_filename=None,warmup_sec=0.5,read_timeout_ms=200,print_timings=True):
+def take_images(
+    captures_dir="captures_camera",
+    color_filename=None,
+    depth_filename=None,
+    warmup_sec=1.5,
+    read_timeout_ms=1000,
+    discard_initial_frames=5,
+    print_timings=True,
+):
     """Capture one color frame and one depth frame, then save both to disk."""
     timings = []
     total_t0 = time.perf_counter()
@@ -50,15 +58,15 @@ def take_images(captures_dir="captures_camera",color_filename=None,depth_filenam
         camera.setDenoiseStatus(True)
         camera.setTemporalDenoiseStatus(True)
         camera.setSpatialDenoiseStatus(True)
+
         camera.setStreamFlagMode(stream_mode_flag)
 
         modes_color = camera.getSupportFrameModes(color_stream)
         modes_depth = camera.getSupportFrameModes(depth_stream)
 
-        # Prototype shortcut: keep the same frame-mode indexes used by main.py.
-        if camera.setFrameMode(color_stream, modes_color[17]) != 0:
+        if camera.setFrameMode(color_stream, modes_color[12]) != 0: #mode is size=1920x1080, fps=5
             raise RuntimeError("Failed to set color frame mode.")
-        if camera.setFrameMode(depth_stream, modes_depth[5]) != 0:
+        if camera.setFrameMode(depth_stream, modes_depth[0]) != 0: #mode is size=640x400, fps=5
             raise RuntimeError("Failed to set depth frame mode.")
         timings.append(("setup_camera", time.perf_counter() - t0))
 
@@ -67,6 +75,20 @@ def take_images(captures_dir="captures_camera",color_filename=None,depth_filenam
             raise RuntimeError("Failed to start color/depth streams.")
         time.sleep(warmup_sec)
         timings.append(("start_streams_and_warmup", time.perf_counter() - t0))
+
+        t0 = time.perf_counter()
+        for _ in range(discard_initial_frames):
+            discard_color = camera.readColorFrame(read_timeout_ms)
+            discard_depth = camera.readDepthFrame(read_timeout_ms)
+            if discard_color is None or discard_depth is None:
+                if discard_color is not None:
+                    camera.releaseFrame(discard_color)
+                if discard_depth is not None:
+                    camera.releaseFrame(discard_depth)
+                raise RuntimeError("Failed while discarding initial color/depth frames.")
+            camera.releaseFrame(discard_color)
+            camera.releaseFrame(discard_depth)
+        timings.append(("discard_initial_frames", time.perf_counter() - t0))
 
         t0 = time.perf_counter()
         color_frame = camera.readColorFrame(read_timeout_ms)
@@ -83,6 +105,7 @@ def take_images(captures_dir="captures_camera",color_filename=None,depth_filenam
         color_width = color_frame.getWidth()
         color_height = color_frame.getHeight()
         color_array = np.ndarray(shape=(color_height, color_width, 3),dtype=np.uint8,buffer=color_frame.getDataAsUint8()).copy()
+
         timings.append(("convert_color_buffer", time.perf_counter() - t0))
 
         t0 = time.perf_counter()
